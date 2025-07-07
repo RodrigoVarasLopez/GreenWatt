@@ -14,8 +14,8 @@
 | Tecnología         | ID API |
 | ------------------ | ------ |
 | Hidraulica         | 12     |
-| Nuclear            | 6      |
-| Eólica             | 5      |
+| Nuclear            | 2039   |
+| Eólica             | 2038   |
 | Solar fotovoltaica | 4      |
 | Carbón             | 16     |
 | Ciclo combinado    | 20     |
