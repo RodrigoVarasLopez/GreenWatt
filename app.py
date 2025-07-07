@@ -4,9 +4,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
+
+# ============= TOKEN + HEADERS =============
 API_TOKEN = st.secrets["ESIOS_API_TOKEN"]
 
-# Cabeceras válidas para ESIOS
 headers = {
     "Accept": "application/json; application/vnd.esios-api-v1+json",
     "Content-Type": "application/json",
@@ -14,7 +15,7 @@ headers = {
     "x-api-key": API_TOKEN
 }
 
-# 🔍 Explorador de indicadores
+# ============= BÚSQUEDA DE INDICADORES =============
 st.subheader("🔍 Indicadores disponibles en ESIOS (filtrados por 'nuclear' o 'eólica')")
 
 @st.cache_data
@@ -26,11 +27,12 @@ def buscar_indicadores_clave(palabras_clave):
             lista = r.json()["indicators"]
             return [i for i in lista if any(p in i["name"].lower() for p in palabras_clave)]
         else:
-            st.error(f"No se pudo obtener la lista de indicadores. Código: {r.status_code}")
+            st.error(f"❌ Código de error {r.status_code} al consultar indicadores.")
     except Exception as e:
-        st.error(f"Error al consultar indicadores: {e}")
+        st.error(f"❌ Error de conexión: {e}")
     return []
 
+# Palabras clave
 palabras = ["nuclear", "eólica"]
 indicadores_filtrados = buscar_indicadores_clave(palabras)
 
@@ -41,7 +43,8 @@ if indicadores_filtrados:
     st.write("🔢 Indicadores encontrados:")
     st.dataframe(df_ind)
 else:
-    st.warning("No se encontraron indicadores con esas palabras clave.")
+    st.warning("⚠️ No se encontraron indicadores con esas palabras clave.")
+
 
 
 # ============================
