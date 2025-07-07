@@ -1,12 +1,9 @@
 import streamlit as st
 import requests
 import matplotlib.pyplot as plt
-import os
-from dotenv import load_dotenv
 
-# Cargar variables de entorno
-load_dotenv()
-api_token = os.getenv("ESIOS_API_TOKEN")
+# Cargar token desde secrets
+api_token = st.secrets["ESIOS_API_TOKEN"]
 
 # Configuración de página
 st.set_page_config(page_title="GreenWatt - Generación Eléctrica en España", layout="centered")
