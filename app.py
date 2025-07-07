@@ -1,13 +1,16 @@
 import streamlit as st
 import requests
 import matplotlib.pyplot as plt
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
+api_token = os.getenv("ESIOS_API_TOKEN")
 
 # Configuración de página
-st.set_page_config(page_title="Generación eléctrica en España", layout="centered")
-st.title("🔌 Generación Eléctrica por Tecnología - REE (e-sios)")
-
-# Ingresar token de la API
-api_token = st.text_input("🔑 Introduce tu API Token de e-sios:", type="password")
+st.set_page_config(page_title="GreenWatt - Generación Eléctrica en España", layout="centered")
+st.title("🔌 GreenWatt: Generación Eléctrica por Tecnología (REE - e-sios)")
 
 # Tecnologías y sus IDs en la API
 tecnologias = {
@@ -44,7 +47,7 @@ def obtener_datos(api_token):
             datos[nombre] = 0
     return datos
 
-# Mostrar resultados si hay token
+# Mostrar resultados
 if api_token:
     datos = obtener_datos(api_token)
 
@@ -62,4 +65,4 @@ if api_token:
 
     st.info("Las tecnologías verdes son: Eólica, Solar fotovoltaica e Hidráulica.")
 else:
-    st.warning("Introduce tu API Token para obtener datos.")
+    st.error("❌ Token no definido. Asegúrate de definirlo en el archivo `.env`")
