@@ -4,6 +4,36 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
+st.subheader("🔍 Exploración de indicadores disponibles en ESIOS (solo nuclear y eólica)")
+
+@st.cache_data
+def buscar_indicadores_clave(palabras_clave):
+    url = "https://api.esios.ree.es/indicators"
+    try:
+        r = requests.get(url, headers=headers)
+        if r.status_code == 200:
+            lista = r.json()["indicators"]
+            return [i for i in lista if any(p in i["name"].lower() for p in palabras_clave)]
+        else:
+            st.error(f"No se pudo obtener la lista de indicadores. Código: {r.status_code}")
+    except Exception as e:
+        st.error(f"Error al consultar indicadores: {e}")
+    return []
+
+# Buscar por palabras clave
+palabras = ["nuclear", "eólica"]
+indicadores_filtrados = buscar_indicadores_clave(palabras)
+
+# Mostrar resultados
+if indicadores_filtrados:
+    df_ind = pd.DataFrame(indicadores_filtrados)[['id', 'name']]
+    df_ind = df_ind.sort_values(by='id')
+    st.write("Se encontraron los siguientes indicadores:")
+    st.dataframe(df_ind)
+else:
+    st.warning("No se encontraron indicadores con esas palabras clave.")
+
+
 # ============================
 # CONFIGURACIÓN
 # ============================
