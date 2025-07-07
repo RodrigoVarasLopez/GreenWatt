@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
 # ============================
-# CONFIGURACION
+# CONFIGURACIÓN
 # ============================
 st.set_page_config(page_title="GreenWatt", layout="centered")
 st.title("🔌 GreenWatt: Generación Eléctrica por Tecnología (REE - e-sios)")
@@ -23,7 +23,7 @@ headers = {
 }
 
 # ============================
-# TECNOLOGIAS DISPONIBLES
+# TECNOLOGÍAS DISPONIBLES
 # ============================
 tecnologias = {
     'Hidráulica': 12,
@@ -44,10 +44,12 @@ def obtener_valor_actual(indicador_id):
     url = f'https://api.esios.ree.es/indicators/{indicador_id}'
     try:
         r = requests.get(url, headers=headers)
-        print(f"[{indicador_id}] → Status {r.status_code}")  # Debug
+        print(f"[{indicador_id}] → Status {r.status_code}")
         if r.status_code == 200:
             valores = r.json()['indicator']['values']
-            return valores[-1]['value'] if valores else 0
+            for v in reversed(valores):
+                if v['value'] is not None:
+                    return v['value']
     except Exception as e:
         print(f"Error en obtener_valor_actual({indicador_id}): {e}")
     return 0
@@ -57,9 +59,11 @@ def obtener_historico(indicador_id, start_date, end_date):
     url = f"https://api.esios.ree.es/indicators/{indicador_id}?start_date={start_date}&end_date={end_date}"
     try:
         r = requests.get(url, headers=headers)
-        print(f"[Hist {indicador_id}] → Status {r.status_code}")  # Debug
+        print(f"[Hist {indicador_id}] → Status {r.status_code}")
         if r.status_code == 200:
             valores = r.json()['indicator']['values']
+            # Filtrar valores no nulos
+            valores = [v for v in valores if v['value'] is not None]
             df = pd.DataFrame(valores)
             df['datetime_utc'] = pd.to_datetime(df['datetime_utc'])
             df['fecha'] = df['datetime_utc'].dt.date
