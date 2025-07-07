@@ -4,49 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
-
-# ============= TOKEN + HEADERS =============
-API_TOKEN = st.secrets["ESIOS_API_TOKEN"]
-
-headers = {
-    "Accept": "application/json; application/vnd.esios-api-v1+json",
-    "Content-Type": "application/json",
-    "Host": "api.esios.ree.es",
-    "x-api-key": API_TOKEN
-}
-
-# ============= BÚSQUEDA DE INDICADORES =============
-st.subheader("🔍 Indicadores disponibles en ESIOS (filtrados por 'nuclear' o 'eólica')")
-
-@st.cache_data
-def buscar_indicadores_clave(palabras_clave):
-    url = "https://api.esios.ree.es/indicators"
-    try:
-        r = requests.get(url, headers=headers)
-        if r.status_code == 200:
-            lista = r.json()["indicators"]
-            return [i for i in lista if any(p in i["name"].lower() for p in palabras_clave)]
-        else:
-            st.error(f"❌ Código de error {r.status_code} al consultar indicadores.")
-    except Exception as e:
-        st.error(f"❌ Error de conexión: {e}")
-    return []
-
-# Palabras clave
-palabras = ["nuclear", "eólica"]
-indicadores_filtrados = buscar_indicadores_clave(palabras)
-
-# Mostrar resultados
-if indicadores_filtrados:
-    df_ind = pd.DataFrame(indicadores_filtrados)[['id', 'name']]
-    df_ind = df_ind.sort_values(by='id')
-    st.write("🔢 Indicadores encontrados:")
-    st.dataframe(df_ind)
-else:
-    st.warning("⚠️ No se encontraron indicadores con esas palabras clave.")
-
-
-
 # ============================
 # CONFIGURACIÓN
 # ============================
@@ -70,8 +27,8 @@ headers = {
 # ============================
 tecnologias = {
     'Hidráulica': 12,
-    'Nuclear': 6,
-    'Eólica': 5,
+    'Nuclear': 2039,
+    'Eólica': 2038,
     'Solar fotovoltaica': 4,
     'Carbón': 16,
     'Ciclo combinado': 20,
