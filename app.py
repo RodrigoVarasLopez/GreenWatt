@@ -33,14 +33,19 @@ def obtener_datos(api_token):
     datos = {}
     for nombre, id_tec in tecnologias.items():
         url = f'https://api.esios.ree.es/indicators/{id_tec}'
-        try:
-            r = requests.get(url, headers=headers)
-            if r.status_code == 200:
-                valores = r.json()['indicator']['values']
-                datos[nombre] = valores[-1]['value'] if valores else 0
+        r = requests.get(url, headers=headers)
+        st.write(f"{nombre} ({id_tec}) → Status {r.status_code}")
+        if r.status_code == 200:
+            json_data = r.json()
+            st.write(f"{nombre}: {json_data['indicator']['short_name']}")
+            valores = json_data['indicator']['values']
+            if valores:
+                datos[nombre] = valores[-1]['value']
             else:
+                st.warning(f"No hay valores para {nombre}")
                 datos[nombre] = 0
-        except:
+        else:
+            st.error(f"Error {r.status_code} en {nombre}")
             datos[nombre] = 0
     return datos
 
