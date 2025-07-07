@@ -16,9 +16,10 @@ st.title("🔌 GreenWatt: Generación Eléctrica por Tecnología (REE - e-sios)"
 API_TOKEN = st.secrets["ESIOS_API_TOKEN"]
 
 headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'Authorization': f'Token token={API_TOKEN}'
+    "Accept": "application/json; application/vnd.esios-api-v1+json",
+    "Content-Type": "application/json",
+    "Host": "api.esios.ree.es",
+    "x-api-key": API_TOKEN
 }
 
 # ============================
@@ -39,24 +40,24 @@ sostenibles = ['Eólica', 'Solar fotovoltaica', 'Hidráulica']
 # FUNCIONES
 # ============================
 @st.cache_data
-
 def obtener_valor_actual(indicador_id):
     url = f'https://api.esios.ree.es/indicators/{indicador_id}'
     try:
         r = requests.get(url, headers=headers)
+        print(f"[{indicador_id}] → Status {r.status_code}")  # Debug
         if r.status_code == 200:
             valores = r.json()['indicator']['values']
             return valores[-1]['value'] if valores else 0
-    except:
-        pass
+    except Exception as e:
+        print(f"Error en obtener_valor_actual({indicador_id}): {e}")
     return 0
 
 @st.cache_data
-
 def obtener_historico(indicador_id, start_date, end_date):
     url = f"https://api.esios.ree.es/indicators/{indicador_id}?start_date={start_date}&end_date={end_date}"
     try:
         r = requests.get(url, headers=headers)
+        print(f"[Hist {indicador_id}] → Status {r.status_code}")  # Debug
         if r.status_code == 200:
             valores = r.json()['indicator']['values']
             df = pd.DataFrame(valores)
@@ -64,8 +65,8 @@ def obtener_historico(indicador_id, start_date, end_date):
             df['fecha'] = df['datetime_utc'].dt.date
             df['hora'] = df['datetime_utc'].dt.hour
             return df[['datetime_utc', 'value', 'fecha', 'hora']]
-    except:
-        pass
+    except Exception as e:
+        print(f"Error en obtener_historico({indicador_id}): {e}")
     return pd.DataFrame()
 
 # ============================
@@ -113,7 +114,6 @@ with tabs[1]:
     if not df_hist.empty:
         st.info("Datos en hora UTC. Cada curva representa un día.")
         import seaborn as sns
-        import matplotlib.pyplot as plt
 
         fig, ax = plt.subplots(figsize=(12, 5))
         sns.lineplot(data=df_hist, x="hora", y="value", hue="fecha", marker="o", ax=ax)
