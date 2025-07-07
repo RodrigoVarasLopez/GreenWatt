@@ -1,6 +1,6 @@
 # 🌱 GreenWatt
 
-**EcoEnergia REE** es una aplicación desarrollada con Streamlit que visualiza en tiempo real la generación eléctrica en España por tipo de tecnología, destacando las fuentes más sostenibles (solar, eólica e hidráulica).
+**GreenWatt** es una aplicación desarrollada con Streamlit que visualiza en tiempo real la generación eléctrica en España por tipo de tecnología, destacando las fuentes más sostenibles (solar, eólica e hidráulica).
 
 ## 🚀 Funcionalidades
 
@@ -17,7 +17,7 @@
 ## 🧪 Instalación local
 
 ```bash
-git clone https://github.com/tuusuario/ecoenergia-ree.git
-cd ecoenergia-ree
+git clone https://github.com/RodrigoVarasLopez/GreenWatt.git
+cd GreenWatt
 pip install -r requirements.txt
 streamlit run app.py
