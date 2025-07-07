@@ -40,21 +40,6 @@ sostenibles = ['Eólica', 'Solar fotovoltaica', 'Hidráulica']
 # FUNCIONES
 # ============================
 @st.cache_data
-def obtener_valor_actual(indicador_id):
-    url = f'https://api.esios.ree.es/indicators/{indicador_id}'
-    try:
-        r = requests.get(url, headers=headers)
-        print(f"[{indicador_id}] → Status {r.status_code}")
-        if r.status_code == 200:
-            valores = r.json()['indicator']['values']
-            for v in reversed(valores):
-                if v['value'] is not None:
-                    return v['value']
-    except Exception as e:
-        print(f"Error en obtener_valor_actual({indicador_id}): {e}")
-    return 0
-
-@st.cache_data
 def obtener_historico(indicador_id, start_date, end_date):
     url = f"https://api.esios.ree.es/indicators/{indicador_id}?start_date={start_date}&end_date={end_date}"
     try:
@@ -62,8 +47,9 @@ def obtener_historico(indicador_id, start_date, end_date):
         print(f"[Hist {indicador_id}] → Status {r.status_code}")
         if r.status_code == 200:
             valores = r.json()['indicator']['values']
-            # Filtrar valores no nulos
             valores = [v for v in valores if v['value'] is not None]
+            if not valores:
+                return pd.DataFrame()
             df = pd.DataFrame(valores)
             df['datetime_utc'] = pd.to_datetime(df['datetime_utc'])
             df['fecha'] = df['datetime_utc'].dt.date
@@ -72,6 +58,16 @@ def obtener_historico(indicador_id, start_date, end_date):
     except Exception as e:
         print(f"Error en obtener_historico({indicador_id}): {e}")
     return pd.DataFrame()
+
+@st.cache_data
+def obtener_valor_actual(indicador_id):
+    hoy = datetime.utcnow()
+    start = hoy.replace(hour=0, minute=0)
+    end = hoy.replace(hour=23, minute=59)
+    df = obtener_historico(indicador_id, start.isoformat(), end.isoformat())
+    if not df.empty:
+        return df.sort_values("datetime_utc").iloc[-1]["value"]
+    return 0
 
 # ============================
 # TABS
