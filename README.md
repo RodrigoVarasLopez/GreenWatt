@@ -25,7 +25,7 @@
 
 ```bash
 # Clonar el repositorio
-https://github.com/tu-usuario/greenwatt.git
+https://github.com/RodrigoVarasLopez/greenwatt.git
 cd greenwatt
 
 # Crear entorno virtual (opcional pero recomendado)
